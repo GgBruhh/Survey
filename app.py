@@ -11,5 +11,20 @@ responses = []
 
 @app.route('/')
 def show_home_page():
-
     return render_template('home.html', survey=survey)
+
+@app.route('/questions/0')
+def show_question1():
+    return render_template('question1.html')
+
+@app.route('/questions/1')
+def show_question1():
+    return render_template('question2.html')
+
+@app.route('/questions/2')
+def show_question1():
+    return render_template('question3.html')
+
+@app.route('/questions/3')
+def show_question1():
+    return render_template('question4.html')
