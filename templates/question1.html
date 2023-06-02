@@ -2,4 +2,12 @@
 {% block title %}Question 1{% endblock %}
 {% block content %}
 
+<h1>{{question.question}}</h1>
+{% for choice in choices %}
+<input type="radio" name="{{choice}}">
+<label for="{{choice}}">{{choice}}</label><br>
+{% endfor %}
+
+<a href="/questions/1">Next Question</a>
+
 {% endblock%}
