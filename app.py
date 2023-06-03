@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, request, flash
 from flask_debugtoolbar import DebugToolbarExtension
 from surveys import satisfaction_survey as survey
 
@@ -7,7 +7,18 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'SECRET'
 debug = DebugToolbarExtension(app)
 
+
+
+
+
+questions = []
 responses = []
+
+def get_questions():
+    for question in survey.questions:
+        questions.append(question.question)
+
+get_questions()
 
 @app.route('/')
 def show_home_page():
@@ -15,25 +26,37 @@ def show_home_page():
 
 @app.route('/questions/0')
 def show_question1():
-    question = survey.questions[0]
-    choices = question.choices
+    question = questions[0]
+    choices = survey.questions[0].choices
     print(choices)
     return render_template('question1.html',survey=survey,question=question,choices=choices)
 
-@app.route('/questions/1')
-def show_question2():
-    question = survey.questions[1]
-    choices = question.choices
-    return render_template('question2.html',survey=survey,question=question,choices=choices)
+@app.route('/questions/<id>')
+def show_questions(id):
+    id = len(responses)
+    question = questions[id]
+    choices = survey.questions[id].choices
+    return render_template('question1.html',survey=survey,question=question,choices=choices)
 
-@app.route('/questions/2')
-def show_question3():
-    question = survey.questions[2]
-    choices = question.choices
-    return render_template('question3.html',survey=survey,question=question,choices=choices)
 
-@app.route('/questions/3')
-def show_question4():
-    question = survey.questions[3]
-    choices = question.choices
-    return render_template('question4.html',survey=survey,question=question,choices=choices)
+
+@app.route("/answer", methods=['POST'])
+def get_answer():
+    print(request)
+    choice = request.form['answer']
+    responses.append(choice)
+    
+    
+    if len(responses) == len(questions):
+        return redirect('/complete')
+    
+    if (len(responses) != id):
+        # Trying to access questions out of order.
+        flash(f"Invalid question id: {id}.")
+        return redirect(f"/questions/{len(responses)}")
+    else:
+        return redirect(f"/questions/{len(responses)}")
+    
+@app.route('/complete')
+def show_complete():
+    return render_template('complete.html')
