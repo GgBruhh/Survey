@@ -8,11 +8,8 @@ app.config['SECRET_KEY'] = 'SECRET'
 debug = DebugToolbarExtension(app)
 
 
-
-
-
 questions = []
-responses = []
+
 
 def get_questions():
     for question in survey.questions:
@@ -24,6 +21,11 @@ get_questions()
 def show_home_page():
     return render_template('home.html', survey=survey)
 
+@app.route('/begin', methods=['POST'])
+def begin_survey():
+    session['responses'] = []
+    return redirect("/questions/0")
+
 @app.route('/questions/0')
 def show_question1():
     question = questions[0]
@@ -33,6 +35,7 @@ def show_question1():
 
 @app.route('/questions/<id>')
 def show_questions(id):
+    responses = session.get('responses')
     id = len(responses)
     question = questions[id]
     choices = survey.questions[id].choices
@@ -44,7 +47,11 @@ def show_questions(id):
 def get_answer():
     print(request)
     choice = request.form['answer']
+    responses = session['responses']
     responses.append(choice)
+
+    session['responses'] = responses
+    
     
     
     if len(responses) == len(questions):
